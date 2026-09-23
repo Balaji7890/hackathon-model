@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Airport Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3fb;--card:#ffffff;--ink:#12233f;--mut:#5d6780;--bd:#dbe3f0;--blue:#1b4db9;--blue-2:#eaf1ff;--amber:#f5b700;--amberbg:#fff4c8;--ok:#1a9b66;--okbg:#e8f7ef;--shadow:0 18px 36px rgba(17,32,58,.08)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1526;--card:#15253f;--ink:#edf3ff;--mut:#a7b4ca;--bd:#2a3a59;--blue:#6e9aff;--blue-2:#1a2c4d;--amber:#f8c84c;--amberbg:#3e3414;--ok:#5ace9a;--okbg:#123d2f;--shadow:0 18px 36px rgba(2,6,18,.38)}}
+:root[data-theme="dark"]{--bg:#0d1526;--card:#15253f;--ink:#edf3ff;--mut:#a7b4ca;--bd:#2a3a59;--blue:#6e9aff;--blue-2:#1a2c4d;--amber:#f8c84c;--amberbg:#3e3414;--ok:#5ace9a;--okbg:#123d2f;--shadow:0 18px 36px rgba(2,6,18,.38)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(circle at top left,#f9fbff 0%,var(--bg) 38%);color:var(--ink);font:16px/1.5 'Atkinson Hyperlegible',system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.app{height:100%;display:flex;flex-direction:column;max-width:1180px;margin:0 auto;padding:0 10px}
+header{padding:18px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.eyebrow{margin:0 0 4px;color:var(--mut);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+h1{margin:0;font-size:1.5rem;line-height:1.2}
+.top-actions{display:flex;align-items:center;gap:8px}
+.ghost{padding:8px 10px;border:1px solid var(--bd);background:var(--card);border-radius:10px;box-shadow:var(--shadow)}
+.fl{margin:6px 0 0;color:var(--mut);font-size:.95rem}
+.meta-strip{padding:0 16px 8px;display:flex;flex-wrap:wrap;gap:8px}
+.meta-pill,.mini,.chips button,.sim button,.lost,.inp button,.tabs button{transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.meta-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--bd);background:var(--card);border-radius:999px;font-size:.82rem;color:var(--ink);box-shadow:var(--shadow)}
+.meta-pill strong{font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--mut)}
+.meta-pill .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);display:inline-block;box-shadow:0 0 0 4px rgba(26,155,102,.14)}
+.tabs{display:flex;gap:6px;padding:0 16px 10px}
+.tabs button{flex:1;padding:10px 12px;border:1px solid var(--bd);background:var(--card);border-radius:10px;box-shadow:var(--shadow)}
+body[data-view=chat] [data-t=chat],body[data-view=journey] [data-t=journey],body[data-view=plan] [data-t=plan]{background:var(--blue);color:var(--card);border-color:var(--blue)}
+main{flex:1;min-height:0;display:grid;gap:12px;padding:0 16px 12px}
+.chat{display:flex;flex-direction:column;min-height:0;background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--shadow)}
+.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,rgba(24,77,185,.03),transparent 180px)}
+.b{max-width:88%;padding:10px 12px;border-radius:14px;overflow-wrap:anywhere;box-shadow:0 8px 18px rgba(17,32,58,.04)}
+.b.bot{background:var(--bg);border:1px solid var(--bd);align-self:flex-start}
+.b.you{background:linear-gradient(135deg,var(--blue),#3f67c7);color:var(--card);align-self:flex-end}
+.b ol,.b ul{margin:6px 0;padding-left:20px}
+.b small{color:var(--mut)}
+.b.you small{color:rgba(255,255,255,.82)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:0 12px 8px}
+.chips button,.mini{white-space:nowrap;padding:7px 10px;border:1px solid rgba(27,77,185,.4);color:var(--blue);background:var(--blue-2);border-radius:999px;font-size:.85rem}
+.mini{margin-top:6px}
+.inp{display:flex;gap:8px;padding:8px 12px 12px;border-top:1px solid var(--bd)}
+.inp input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.inp button{padding:11px 16px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--blue),#2f67d2);color:var(--card);font-weight:700;box-shadow:0 10px 18px rgba(27,77,185,.22)}
+.side{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
+.panel h2{margin:0 0 2px;font-size:1.08rem}
+.sub{margin:0 0 10px;color:var(--mut);font-size:.88rem}
+.route{list-style:none;margin:0;padding:0}
+.route li{position:relative;display:flex;gap:10px;padding:0 0 12px 0}
+.route li:not(:last-child)::before{content:"";position:absolute;left:14px;top:30px;bottom:0;border-left:2px dashed var(--bd)}
+.route li.done:not(:last-child)::before{border-left:2px solid var(--ok)}
+.node{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--bd);background:var(--card);font-weight:700}
+li.done .node{background:var(--ok);border-color:var(--ok);color:var(--card)}
+li.cur .node{border-color:var(--amber);box-shadow:0 0 0 3px var(--amberbg)}
+.route .t{font-weight:700}
+.route .w{color:var(--mut);font-size:.88rem}
+.here{display:inline-block;margin-left:6px;padding:0 8px;border-radius:99px;background:var(--amber);color:#14213d;font-size:.78rem;font-weight:700}
+.lost{margin-top:4px;padding:8px 12px;border:1px solid var(--blue);background:transparent;color:var(--blue);border-radius:10px}
+.plan{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.plan li{padding:8px 10px;border-radius:10px;border-left:5px solid var(--bd);background:var(--bg)}
+.plan li.act{border-left-color:var(--amber);background:var(--amberbg)}
+.plan li.info{border-left-color:var(--blue)}
+.plan b{display:block;font-size:.8rem;color:var(--mut)}
+.sim{display:flex;flex-wrap:wrap;gap:6px}
+.sim button{padding:6px 10px;border:1px solid var(--bd);background:var(--bg);border-radius:8px;font-size:.85rem}
+details{margin-top:8px;color:var(--mut);font-size:.88rem}
+.foot{padding:0 16px 10px;color:var(--mut);font-size:.78rem}
+.tabs button:hover,.ghost:hover,.mini:hover,.chips button:hover,.sim button:hover,.lost:hover,.inp button:hover{transform:translateY(-1px)}
+@media (min-width:900px){.tabs{display:none}main{grid-template-columns:1.35fr 1fr}}
+@media (max-width:899px){main>*{display:none}body[data-view=chat] .chat{display:flex}body[data-view=journey] .side,body[data-view=plan] .side{display:flex}body[data-view=journey] #plan,body[data-view=plan] #journey{display:none}}
+</style>
+</head>
+<body data-view="chat">
+<div class="app">
+<header>
+<div>
+<p class="eyebrow">Travel assistant</p>
+<h1>Airport Companion</h1>
+<p class="fl" id="fl"></p>
+</div>
+<div class="top-actions">
+<button class="ghost" id="themeToggle" aria-label="Toggle theme">🌙</button>
+</div>
+</header>
+<div class="meta-strip" id="metaStrip"></div>
+<nav class="tabs">
+<button data-t="chat" onclick="view('chat')">Chat</button>
+<button data-t="journey" onclick="view('journey')">Journey</button>
+<button data-t="plan" onclick="view('plan')">My plan</button>
+</nav>
+<main>
+<section class="chat">
+<div class="msgs" id="msgs"></div>
+<div class="chips">
+<button onclick="ask('I am flying internationally for the first time. What do I do after reaching the airport?')">First international flight</button>
+<button onclick="ask('Chennai to Dubai, economy. Can I carry 2 laptops and 1 power bank?')">Can I carry this?</button>
+<button onclick="ask('I lost track of where I am')">I lost track</button>
+<button onclick="ask('What changed for me?')">What changed for me?</button>
+</div>
+<div class="inp">
+<input id="q" placeholder="Ask about your airport journey" aria-label="Message" autocomplete="off">
+<button onclick="send()">Send</button>
+</div>
+</section>
+<aside class="side">
+<div class="panel" id="journey">
+<h2>Your journey</h2>
+<p class="sub" id="prog"></p>
+<ol class="route" id="route"></ol>
+<button class="lost" onclick="ask('I lost track of where I am');view('chat')">I lost track</button>
+</div>
+<div class="panel" id="plan">
+<h2>Your action plan</h2>
+<p class="sub">Only changes that need something from you show here.</p>
+<ul class="plan" id="planl"></ul>
+<p class="sub" style="margin-bottom:6px">Simulate an airport update</p>
+<div class="sim">
+<button onclick="ev('gate')">Gate change</button>
+<button onclick="ev('delay')">45 min delay</button>
+<button onclick="ev('early')">Boarding earlier</button>
+<button onclick="ev('queue')">Long security queue</button>
+<button onclick="ev('noise')">Other flight's update</button>
+</div>
+<details id="hid"><summary>Hidden from you (<span id="hn">0</span>)</summary><ul class="plan" id="hidl"></ul></details>
+</div>
+</aside>
+</main>
+<p class="foot">Demo with sample flight data and sample rules. Confirm baggage limits and timings with your airline and airport.</p>
+</div>
+<script>
+const F={gate:'B12',board:'01:55',dep:'02:45'};
+const S=[
+{t:'Enter the terminal',w:()=>'Departures entrance. Show passport and ticket to the guard.',c:'You are inside the departures hall.'},
+{t:'Check in and drop your bag',w:()=>'Airline counters in the departures hall.',c:'You hold a boarding pass and a bag receipt.'},
+{t:'Immigration',w:()=>'Follow the Immigration / Emigration signs.',c:'Your passport has today’s exit stamp.'},
+{t:'Security check',w:()=>'Follow the Security signs. Take laptops and liquids out.',c:'Your cabin bag was scanned and you are past the gates.'},
+{t:'Go to your gate',w:()=>'Gate '+F.gate+'. Check the screens on the way.',c:'You are in the gate area.'},
+{t:'Board the flight',w:()=>'Gate '+F.gate+'. Scan your boarding pass.',c:'Your boarding pass was scanned.'}
+];
+let done=new Set(),plan=[],hid=[],theme='light';
+try{done=new Set(JSON.parse(localStorage.getItem('aj')||'[]'));theme=localStorage.getItem('airport-theme')||'light';}catch(e){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem('aj',JSON.stringify([...done]));localStorage.setItem('airport-theme',theme);}catch(e){}};
+const cur=()=>{for(let i=0;i<S.length;i++)if(!done.has(i))return i;return S.length};
+const last=()=>{let l=-1;done.forEach(i=>{if(i>l)l=i});return l};
+const add=(t,m)=>{let[h,n]=t.split(':').map(Number),x=((h*60+n+m)%1440+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')};
+function view(v){document.body.dataset.view=v}
+function say(h,who){const d=document.createElement('div');d.className='b '+(who||'bot');if(who==='you')d.textContent=h;else d.innerHTML=h;$('msgs').appendChild(d);$('msgs').scrollTop=1e9}
+function head(){
+ $('fl').textContent='Sample flight MAA to DXB, gate '+F.gate+', boards '+F.board+', departs '+F.dep;
+ const next=cur();
+ const score=Math.round((done.size/S.length)*100);
+ const status=done.size===S.length?'Ready to fly':next<S.length?'On track':'Almost there';
+ $('metaStrip').innerHTML=`<span class="meta-pill"><span class="dot"></span><strong>Status</strong> ${status}</span><span class="meta-pill"><strong>Progress</strong> ${score}%</span><span class="meta-pill"><strong>Next</strong> ${next<S.length?S[next].t:'Boarding complete'}</span>`;
+}
+function setTheme(next){
+ theme=next;
+ document.documentElement.dataset.theme=theme;
+ $('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+ save();
+}
+function draw(){
+ head();const c=cur();
+ $('prog').textContent=done.size+' of '+S.length+' done. Tap a circle to mark a step done.';
+ $('route').innerHTML=S.map((s,i)=>`<li class="${done.has(i)?'done':''} ${i===c?'cur':''}"><button class="node" aria-label="Toggle ${s.t}" onclick="tog(${i})">${done.has(i)?'✓':i+1}</button><div><div class="t">${s.t}${i===c?'<span class="here">You are here</span>':''}</div><div class="w">${s.w()}</div></div></li>`).join('');
+ $('planl').innerHTML=plan.length?plan.map(p=>`<li class="${p.lv}"><b>${p.lv==='act'?'Do this now':'Good to know'}</b>${p.t}</li>`).join(''):'<li>No action needed right now.</li>';
+ $('hidl').innerHTML=hid.map(p=>`<li>${p}</li>`).join('');$('hn').textContent=hid.length;
+}
+function tog(i){done.has(i)?done.delete(i):done.add(i);save();draw()}
+function mark(i){done.add(i);save();draw();say('Marked <b>'+S[i].t+'</b> as done. '+(i+1<S.length?'Next: <b>'+S[i+1].t+'</b>.':'You are ready. Have a good flight.'))}
+function ev(k){
+ const c=cur();let m;
+ if(k==='gate'){const o=F.gate;F.gate='B18';m={lv:'act',t:'Gate changed from '+o+' to B18. '+(c<4?'Go to B18 after security.':'Walk to B18 now.')}}
+ if(k==='delay'){F.board=add(F.board,45);F.dep=add(F.dep,45);m={lv:'info',t:'Flight delayed 45 minutes. Boarding is now '+F.board+'. No rush, but stay near gate '+F.gate+'.'}}
+ if(k==='early'){F.board=add(F.board,-15);m={lv:'act',t:'Boarding moved 15 minutes earlier to '+F.board+'. Be at gate '+F.gate+' by then.'}}
+ if(k==='queue'){if(c<=3)m={lv:'act',t:'Security queue is about 35 minutes. Go to security now and shop later.'};else hid.unshift('Long security queue. You are already past security.')}
+ if(k==='noise')hid.unshift('Gate change for flight EK 512. This is not your flight.');
+ if(m){plan.unshift(m);say('<b>Update for you:</b> '+m.t)}
+ else say('An airport update came in, but you do not need to do anything. I hid it from your plan.');
+ draw();
+}
+function journey(){
+ const c=cur();
+ return 'Here is your path. The order of immigration and security can differ by airport, so follow the signs.<ol>'+S.map((s,i)=>'<li>'+(done.has(i)?'✓ ':'')+'<b>'+s.t+'</b><br><small>'+s.w()+'</small></li>').join('')+'</ol>First-timer tips: arrive about 3 hours before an international flight, and keep your passport, ticket and visa papers in one pocket.'+(c<S.length?'<br>Right now: <b>'+S[c].t+'</b>.':'')
+}
+function recover(){
+ const l=last(),n=l+1;
+ if(l<0)return 'I have no finished steps recorded, so the safest place to start is <b>'+S[0].t+'</b>. '+S[0].w()+'<br><button class="mini" onclick="mark(0)">Mark it done</button>';
+ if(n>=S.length)return 'All six steps are marked done. You should be on board or about to be. Check the boarding pass for your seat.';
+ return 'Your last confirmed step: <b>'+S[l].t+'</b>.<br>Safest next step: <b>'+S[n].t+'</b>. '+S[n].w()+'<br><small>Not sure you finished '+S[l].t.toLowerCase()+'? Quick check: '+S[l].c+' If not, go back and finish it first.</small><br><button class="mini" onclick="mark('+n+')">Mark "'+S[n].t+'" done</button>'
+}
+function plantext(){
+ const a=plan.filter(p=>p.lv==='act');
+ if(!plan.length)return 'Nothing has changed. Boarding is at '+F.board+' from gate '+F.gate+'. Use the buttons in My plan to simulate updates.';
+ return (a.length?'<b>Needs action:</b><ul>'+a.map(p=>'<li>'+p.t+'</li>').join('')+'</ul>':'Nothing needs action right now.')+'Current: gate '+F.gate+', boards '+F.board+', departs '+F.dep+'.'
+}
+const R=[
+[/laptop|macbook|notebook/,'Laptop','Cabin ✅ best choice. Checked ⚠️ some airlines allow it, but the lithium battery, damage and theft risk make it a poor idea. At security, take each laptop out of the bag into its own tray.'],
+[/power ?bank|portable charger/,'Power bank','Cabin only ✅. Checked bag ❌ never. Up to 100 Wh is normally fine, 100 to 160 Wh needs airline approval, above 160 Wh is not allowed. Wh is printed on it, or use mAh × 3.7 ÷ 1000 (20,000 mAh is about 74 Wh). Some airlines also limit using it in flight.'],
+[/spare batter|lithium|batteries/,'Spare batteries','Cabin only ✅, in a case or with terminals taped. Checked ❌.'],
+[/medic|\bpills?\b|insulin|syrup|prescription|\bdrugs?\b/,'Medicines','Cabin ✅ in original packaging with the prescription or a doctor’s letter. Liquid medicine above 100 ml needs that letter. Some medicines are controlled in certain countries, so check the destination’s rules.'],
+[/phone|ipad|camera|kindle|headphone/,'Phone, tablet, camera','Cabin ✅ recommended. Keep them out of checked bags because of batteries and theft.'],
+[/liquid|perfume|water|shampoo|cream|\boil\b|bottle|\bgel\b/,'Liquids','Cabin: each container 100 ml or less, all in one clear 1-litre bag. Larger containers go in checked baggage, packed leak-proof.'],
+[/knife|scissor|blade|razor|screwdriver/,'Sharp items','Checked only ✅. Cabin ❌.'],
+[/lighter|matches|matchbox/,'Lighter, matches','Differs by airline and country. Usually one lighter on your person and none in checked bags.'],
+[/food|pickle|ghee|snack|sweets|masala|spice/,'Food','Solid packed food is usually fine. Pickles and ghee count as liquids, so pack them in checked bags. Some countries limit meat, dairy and fresh produce on arrival.']
+];
+function bag(t){
+ const hit=R.filter(r=>r[0].test(t));
+ const al=(t.match(/emirates|air india|indigo|qatar|etihad|singapore|air arabia|spicejet|flydubai|lufthansa/)||[])[0];
+ const cab=(t.match(/economy|business|first class/)||[])[0];
+ const ctx=[al,cab,/dubai|uae/.test(t)?'Chennai to Dubai':''].filter(Boolean).join(', ');
+ let o=ctx?'<small>Checking for: '+ctx+'</small><br>':'';
+ if(hit.length)o+='<ul>'+hit.map(r=>'<li><b>'+r[1]+'</b>: '+r[2]+'</li>').join('')+'</ul>';
+ const lq=t.match(/(\d+|two|three|four)\s+laptops/);
+ if(lq)o+='There is no fixed limit on laptops, but '+lq[1]+' count toward your cabin bag weight, and each goes in its own tray at security.<br>';
+ if(/how many|allowance|exceed|overweight|excess|limit|weight/.test(t)||!hit.length)o+='<b>Bags:</b> a typical economy fare gives 1 cabin bag (about 7 kg) plus a small personal item, and 20 to 30 kg checked on international fares. Exact numbers depend on airline and fare, so read your ticket. Excess baggage is charged per kg at the airport, usually more than adding it online, and heavy overweight can be refused.'+(hit.length?'':'<br>Tell me the item (for example laptop, medicines, perfume) and I will check it.');
+ if(al)o+='<br>Confirm the final limits on '+al.replace(/\b\w/g,x=>x.toUpperCase())+'’s baggage page.';
+ return o+'<br><small>Sample rules for this demo. Verify with your airline before you fly.</small>'
+}
+function reply(t){
+ t=t.toLowerCase();
+ if(/lost track|where am i|forgot|phone (died|dead)|missed (an )?announcement|i am (lost|confused)|what next|next step/.test(t))return recover();
+ if(/bag|carry|luggage|laptop|power ?bank|medic|liquid|battery|allowed|overweight|excess/.test(t))return bag(t);
+ if(/gate|delay|update|plan|changed|queue|boarding time/.test(t))return plantext();
+ if(/first time|what do i do|journey|airport|steps|procedure|after reaching/.test(t))return journey();
+ return 'I can help with four things: your step-by-step airport journey, baggage rules, finding your place if you lose track, and changes that need action from you. Try one of the buttons above.'
+}
+function ask(t){if(!t.trim())return;say(t,'you');setTimeout(()=>{say(reply(t));draw()},350)}
+function send(){const q=$('q');ask(q.value);q.value=''}
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+$('themeToggle').addEventListener('click',()=>setTheme(theme === 'dark' ? 'light' : 'dark'));
+setTheme(theme);
+setTimeout(()=>{say('Hi, I am your airport companion. Ask about your journey, baggage rules, or tap <b>I lost track</b> if you forgot where you are. Updates that need action from you appear in <b>My plan</b>.');draw();},50);
+</script>
+</body>
+</html>
